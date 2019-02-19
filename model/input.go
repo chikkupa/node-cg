@@ -2,9 +2,9 @@ package model
 
 // Input The structure to parse input JSON file
 type Input struct {
-	Name     string   `json:"name"`
-	Fields   []Field  `json:"fields"`
-	Settings Settings `json:"settings"`
+	Name string `json:"name"`
+	// Fields   []Field  `json:"fields"`
+	// Settings Settings `json:"settings"`
 }
 
 // Field Representation of required fields
