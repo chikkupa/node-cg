@@ -9,7 +9,7 @@ import (
 
 func main() {
 
-	inputObject, _ := model.BuildInput(`{
+	inputObject, err := model.BuildInput(`{
 		"name": "todo",
 		"fields" : [
 			{"name": "id", "type" : "int"},
@@ -21,8 +21,13 @@ func main() {
 			"details" : true,
 			"update" : true,
 			"delete" : true
-		}
+		
 	}`)
+
+	if err != nil {
+		fmt.Println("Error: ", err.Error())
+		return
+	}
 
 	fmt.Println(inputObject)
 

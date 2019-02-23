@@ -31,7 +31,11 @@ func BuildInput(data string) (Input, error) {
 	var inputObject Input
 
 	var raw map[string]interface{}
-	json.Unmarshal([]byte(data), &raw)
+	err := json.Unmarshal([]byte(data), &raw)
+
+	if err != nil {
+		return inputObject, err
+	}
 	inputObject.Name, _ = (raw["name"].(string))
 
 	fields, _ := raw["fields"].([]interface{})
