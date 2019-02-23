@@ -2,30 +2,29 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"node-cg/model"
 	"os"
 )
 
 func main() {
 
-	in := []byte(`{ 
+	inputObject, _ := model.BuildInput(`{
 		"name": "todo",
 		"fields" : [
 			{"name": "id", "type" : "int"},
 			{"name": "title", "type" : "string"}
-		]
+		],
+		"settings" : {
+			"list" : "true",
+			"add" : true,
+			"details" : true,
+			"update" : true,
+			"delete" : true
+		}
 	}`)
-	var raw map[string]interface{}
-	json.Unmarshal(in, &raw)
-	fmt.Println(raw["name"].(string))
 
-	fields := raw["fields"].([]interface{})
-
-	for i := 0; i < len(fields); i++ {
-		field := fields[i].(map[string]interface{})
-		fmt.Println(field["name"].(string), "=>", field["type"].(string))
-	}
+	fmt.Println(inputObject)
 
 	// Checking the command line arguments
 	if len(os.Args) < 2 {
