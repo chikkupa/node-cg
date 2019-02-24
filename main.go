@@ -3,33 +3,12 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"node-cg/model"
 	"os"
 )
 
 func main() {
-
-	inputObject, err := model.BuildInput(`{
-		"name": "todo",
-		"fields" : [
-			{"name": "id", "type" : "int"},
-			{"name": "title", "type" : "string"}
-		],
-		"settings" : {
-			"list" : "true",
-			"add" : true,
-			"details" : true,
-			"update" : true,
-			"delete" : true
-		
-	}`)
-
-	if err != nil {
-		fmt.Println("Error: ", err.Error())
-		return
-	}
-
-	fmt.Println(inputObject)
 
 	// Checking the command line arguments
 	if len(os.Args) < 2 {
@@ -41,6 +20,29 @@ func main() {
 		showVersion()
 		return
 	}
+
+	inputContent, err := ioutil.ReadFile(os.Args[1])
+
+	if err != nil {
+		fmt.Println("Error: ", err.Error())
+		return
+	}
+
+	inputObject, err := model.BuildInput(string(inputContent))
+
+	if err != nil {
+		fmt.Println("JSON Error: ", err.Error())
+		return
+	}
+
+	err = model.GenerateModel(inputObject)
+
+	if err != nil {
+		fmt.Println("JSON Error: ", err.Error())
+		return
+	}
+
+	fmt.Println(inputObject)
 
 	showUsage()
 }
