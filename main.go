@@ -35,7 +35,7 @@ func main() {
 		return
 	}
 
-	err = model.GenerateModel(inputObject)
+	err = inputObject.GenerateModel()
 
 	if err != nil {
 		fmt.Println("JSON Error: ", err.Error())

@@ -11,7 +11,7 @@ var modelName string
 var lowercaseName string
 
 // GenerateModel to generate model file
-func GenerateModel(input Input) error {
+func (input Input) GenerateModel() error {
 	folderName := "model"
 	// Create model folder if not exists
 	if _, err := os.Stat(folderName); os.IsNotExist(err) {
@@ -21,28 +21,28 @@ func GenerateModel(input Input) error {
 		}
 	}
 
-	content, err := generateHeaderContent(input)
+	content, err := input.generateHeaderContent()
 
 	if err != nil {
 		return err
 	}
 
 	if input.Settings.List {
-		content += "\n\n" + getnerateGetFunction(input)
+		content += "\n\n" + input.getnerateGetFunction()
 	}
 	if input.Settings.Add {
-		content += "\n\n" + generateCreateFunction(input)
+		content += "\n\n" + input.generateCreateFunction()
 	}
 	if input.Settings.Details {
-		content += "\n\n" + generateGetDetailsFunction(input)
+		content += "\n\n" + input.generateGetDetailsFunction()
 	}
 	if input.Settings.Update {
-		content += "\n\n" + generateUpdateFunction(input)
+		content += "\n\n" + input.generateUpdateFunction()
 	}
 	if input.Settings.Delete {
-		content += "\n\n" + generateDeleteFunction(input)
+		content += "\n\n" + input.generateDeleteFunction()
 	}
-	content += "\n\n" + generateExports(input)
+	content += "\n\n" + input.generateExports()
 
 	filename := strings.ToLower(input.Name) + ".js"
 
@@ -55,7 +55,7 @@ func GenerateModel(input Input) error {
 	return nil
 }
 
-func generateHeaderContent(input Input) (string, error) {
+func (input Input) generateHeaderContent() (string, error) {
 	content := `const config = require("config");
 const mongoose = require("mongoose");
 	
@@ -63,11 +63,11 @@ mongoose.connect(config.get('mongo_connection'))
 	.then(() => console.log("Connected to MongoDB"))
 	.catch(err => console.log("Error connecting MongoDB"));
 `
-	content += "\n" + generateSchemaDefinition(input)
+	content += "\n" + input.generateSchemaDefinition()
 	return content, nil
 }
 
-func generateSchemaDefinition(input Input) string {
+func (input Input) generateSchemaDefinition() string {
 	lowercaseName = strings.ToLower(input.Name)
 	schemaName = strings.ToLower(input.Name) + "Schema"
 	schemaContent := "const " + schemaName + " = new mongoose.Schema({"
@@ -84,7 +84,7 @@ func generateSchemaDefinition(input Input) string {
 	return schemaContent
 }
 
-func getnerateGetFunction(input Input) string {
+func (input Input) getnerateGetFunction() string {
 	content := "async function get" + modelName + "s(){"
 	content += "\n\tconst result = await " + modelName + ".find()"
 	content += "\n\t\t.select({"
@@ -101,7 +101,7 @@ func getnerateGetFunction(input Input) string {
 	return content
 }
 
-func generateCreateFunction(input Input) string {
+func (input Input) generateCreateFunction() string {
 	content := "async function create" + modelName + "("
 	for index, field := range input.Fields {
 		content += field.Name
@@ -125,7 +125,7 @@ func generateCreateFunction(input Input) string {
 	return content
 }
 
-func generateGetDetailsFunction(input Input) string {
+func (input Input) generateGetDetailsFunction() string {
 	content := "async function get" + modelName + "(id){"
 	content += "\n\tif(!mongoose.Types.ObjectId.isValid(id))"
 	content += "\n\t\treturn null;"
@@ -146,7 +146,7 @@ func generateGetDetailsFunction(input Input) string {
 	return content
 }
 
-func generateUpdateFunction(input Input) string {
+func (input Input) generateUpdateFunction() string {
 	content := "async function update" + modelName + "(id"
 	for _, field := range input.Fields {
 		if field.Name != "id" {
@@ -174,7 +174,7 @@ func generateUpdateFunction(input Input) string {
 	return content
 }
 
-func generateDeleteFunction(input Input) string {
+func (input Input) generateDeleteFunction() string {
 	content := "async function delete" + modelName + "(id){"
 	content += "\n\tif(!mongoose.Types.ObjectId.isValid(id))"
 	content += "\n\t\treturn null;"
@@ -187,7 +187,7 @@ func generateDeleteFunction(input Input) string {
 	return content
 }
 
-func generateExports(input Input) string {
+func (input Input) generateExports() string {
 	content := ""
 
 	if input.Settings.List {
